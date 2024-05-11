@@ -2,6 +2,7 @@ package testx
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"os"
 	"strings"
@@ -9,6 +10,7 @@ import (
 
 	_ "github.com/lib/pq"
 
+	"github.com/go-testfixtures/testfixtures/v3"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"
@@ -38,7 +40,7 @@ func SetupDB(
 		Env: []string{
 			"POSTGRES_USER=postgres",
 			"POSTGRES_PASSWORD=postgres",
-			"POSTGRES_DB=postgres",
+			"POSTGRES_DB=test",
 			"listen_addresses='*'",
 		},
 		Mounts: []string{
@@ -62,7 +64,7 @@ func SetupDB(
 
 	port := resource.GetPort("5432/tcp")
 
-	dsn := "postgres://postgres:postgres@localhost:" + port + "/postgres?sslmode=disable"
+	dsn := "postgres://postgres:postgres@localhost:" + port + "/test?sslmode=disable"
 
 	if err := pool.Retry(func() error {
 		conn, err := pgxpool.ParseConfig(dsn)
@@ -89,4 +91,33 @@ func SetupDB(
 			t.Log("failed to purge resource. error: " + err.Error())
 		}
 	}, nil
+}
+
+func SetupData(
+	t *testing.T,
+	dsn string,
+) error {
+	t.Helper()
+
+	dia := "postgres"
+
+	db, err := sql.Open(dia, dsn)
+	if err != nil {
+		return fmt.Errorf("failed to open db: %w", err)
+	}
+
+	if err := db.Ping(); err != nil {
+		return fmt.Errorf("failed to ping db: %w", err)
+	}
+
+	fixtures, err := testfixtures.New(
+		testfixtures.Database(db),
+		testfixtures.Dialect(dia),
+		testfixtures.Directory("testdata"),
+	)
+	if err != nil {
+		return fmt.Errorf("failed to create new fixtures: %w", err)
+	}
+
+	return fixtures.Load()
 }

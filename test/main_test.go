@@ -83,7 +83,11 @@ func TestMain(m *testing.M) {
 		panic(err)
 	}
 
+	code := m.Run()
+
 	if err := pool.Purge(resource); err != nil {
 		panic(err)
 	}
+
+	os.Exit(code)
 }

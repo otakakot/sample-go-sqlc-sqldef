@@ -39,3 +39,7 @@ update: ## go modules update
 	@go get -u -t ./...
 	@go mod tidy
 	@go mod vendor
+
+.PHONY: test
+test: ## run test
+	@go test -v ./test/... -count=1

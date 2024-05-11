@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 
+	_ "github.com/lib/pq"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/ory/dockertest/v3"
 	"github.com/ory/dockertest/v3/docker"

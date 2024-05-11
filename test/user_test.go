@@ -158,3 +158,44 @@ func TestUpdateUser(t *testing.T) {
 		t.Errorf("user updated_at is not updated")
 	}
 }
+
+func TestDeleteUser(t *testing.T) {
+	t.Parallel()
+
+	dsn, cleanup, err := testx.SetupDB(t)
+	if err != nil {
+		t.Fatalf("failed to setup db: %v", err)
+	}
+
+	t.Cleanup(cleanup)
+
+	conn, err := pgxpool.ParseConfig(dsn)
+	if err != nil {
+		t.Fatalf("failed to parse config: %v", err)
+	}
+
+	pool, err := pgxpool.NewWithConfig(context.Background(), conn)
+	if err != nil {
+		t.Fatalf("failed to create pool: %v", err)
+	}
+
+	t.Cleanup(pool.Close)
+
+	if err := testx.SetupData(t, dsn); err != nil {
+		t.Fatalf("failed to setup data: %v", err)
+	}
+
+	id := uuid.MustParse("77777777-7777-7777-7777-777777777777")
+
+	if err := schema.New(pool).DeleteUser(context.Background(), id); err != nil {
+		t.Fatalf("failed to delete user: %v", err)
+	}
+
+	if _, err := schema.New(pool).FindUserByID(context.Background(), id); err == nil {
+		t.Errorf("user should not be found")
+	} else {
+		if !errors.Is(pgx.ErrNoRows, err) {
+			t.Errorf("unexpected error: %v", err)
+		}
+	}
+}

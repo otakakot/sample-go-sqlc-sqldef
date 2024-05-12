@@ -16,7 +16,7 @@ import (
 	"github.com/ory/dockertest/v3/docker"
 )
 
-func SetupDB(
+func SetupContainer(
 	t *testing.T,
 ) (string, func(), error) {
 	t.Helper()
@@ -91,6 +91,35 @@ func SetupDB(
 			t.Log("failed to purge resource. error: " + err.Error())
 		}
 	}, nil
+}
+
+var (
+	dsn     string
+	cleanup func()
+)
+
+// GlovalDSN returns a global dsn and a cleanup function.
+// It sets up a postgres container and migrates the database schema.
+// It also loads the test data into the database.
+func GlovalDSN(
+	t *testing.T,
+) (string, func(), error) {
+	t.Helper()
+
+	ds, cl, err := SetupContainer(t)
+	if err != nil {
+		return "", nil, fmt.Errorf("failed to setup db: %w", err)
+	}
+
+	if err := SetupData(t, ds); err != nil {
+		return "", cl, fmt.Errorf("failed to setup data: %w", err)
+	}
+
+	dsn = ds
+
+	cleanup = cl
+
+	return dsn, cleanup, nil
 }
 
 func SetupData(

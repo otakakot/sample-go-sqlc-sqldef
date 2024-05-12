@@ -16,7 +16,7 @@ import (
 func TestCreateUser(t *testing.T) {
 	t.Parallel()
 
-	dsn, cleanup, err := testx.SetupDB(t)
+	dsn, cleanup, err := testx.SetupContainer(t)
 	if err != nil {
 		t.Fatalf("failed to setup db: %v", err)
 	}
@@ -56,7 +56,7 @@ func TestCreateUser(t *testing.T) {
 func TestFindUserByID(t *testing.T) {
 	t.Parallel()
 
-	dsn, cleanup, err := testx.SetupDB(t)
+	dsn, cleanup, err := testx.SetupContainer(t)
 	if err != nil {
 		t.Fatalf("failed to setup db: %v", err)
 	}
@@ -102,7 +102,7 @@ func TestFindUserByID(t *testing.T) {
 func TestUpdateUser(t *testing.T) {
 	t.Parallel()
 
-	dsn, cleanup, err := testx.SetupDB(t)
+	dsn, cleanup, err := testx.SetupContainer(t)
 	if err != nil {
 		t.Fatalf("failed to setup db: %v", err)
 	}
@@ -162,7 +162,7 @@ func TestUpdateUser(t *testing.T) {
 func TestDeleteUser(t *testing.T) {
 	t.Parallel()
 
-	dsn, cleanup, err := testx.SetupDB(t)
+	dsn, cleanup, err := testx.SetupContainer(t)
 	if err != nil {
 		t.Fatalf("failed to setup db: %v", err)
 	}

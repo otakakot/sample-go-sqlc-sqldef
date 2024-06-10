@@ -40,6 +40,8 @@ github.com/go-sql-driver/mysql v1.7.1 h1:lUIinVbN1DY0xBg0eMOzmmtGoHwWBbvnWubQUrt
 github.com/go-sql-driver/mysql v1.7.1/go.mod h1:OXbVy3sEdcQ2Doequ6Z5BW6fXNQTmx+9S1MCJN5yJMI=
 github.com/go-testfixtures/testfixtures/v3 v3.10.0 h1:BrBwN7AuC+74g5qtk9D59TLGOaEa8Bw1WmIsf+SyzWc=
 github.com/go-testfixtures/testfixtures/v3 v3.10.0/go.mod h1:z8RoleoNtibi6Ar8ziCW7e6PQ+jWiqbUWvuv8AMe4lo=
+github.com/go-testfixtures/testfixtures/v3 v3.11.0 h1:XxQr8AnPORcZkyNd7go5UNLPD3dULN8ixYISlzrlfEQ=
+github.com/go-testfixtures/testfixtures/v3 v3.11.0/go.mod h1:THmudHF1Ixq++J2/UodcJpxUphfyEd77m83TvDtryqE=
 github.com/gogo/protobuf v1.3.2 h1:Ov1cvc58UF3b5XjBnZv7+opcTcQFZebYjWzi34vdm4Q=
 github.com/gogo/protobuf v1.3.2/go.mod h1:P1XiOD3dCwIKUDQYPy72D8LYyHL2YPYrpS2s69NZV8Q=
 github.com/golang-sql/civil v0.0.0-20190719163853-cb61b32ac6fe h1:lXe2qZdvpiX5WZkZR4hgp4KJVfY3nMkvmwbVkpv1rVY=

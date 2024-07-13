@@ -25,6 +25,8 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/rand"
+	"net"
 	"os"
 	"reflect"
 	"strings"
@@ -81,6 +83,7 @@ func (o *stdConnOpener) Connect(ctx context.Context) (_ driver.Conn, err error) 
 		return nil, ErrAcquireConnNoAddress
 	}
 
+	random := rand.Int()
 	for i := range o.opt.Addr {
 		var num int
 		switch o.opt.ConnOpenStrategy {
@@ -88,6 +91,8 @@ func (o *stdConnOpener) Connect(ctx context.Context) (_ driver.Conn, err error) 
 			num = i
 		case ConnOpenRoundRobin:
 			num = (int(connID) + i) % len(o.opt.Addr)
+		case ConnOpenRandom:
+			num = (random + i) % len(o.opt.Addr)
 		}
 		if conn, err = dialFunc(ctx, o.opt.Addr[num], connID, o.opt); err == nil {
 			var debugf = func(format string, v ...any) {}
@@ -120,7 +125,10 @@ func init() {
 // isConnBrokenError returns true if the error class indicates that the
 // db connection is no longer usable and should be marked bad
 func isConnBrokenError(err error) bool {
-	if errors.Is(err, io.EOF) || errors.Is(err, syscall.EPIPE) {
+	if errors.Is(err, io.EOF) || errors.Is(err, syscall.EPIPE) || errors.Is(err, syscall.ECONNRESET) {
+		return true
+	}
+	if _, ok := err.(*net.OpError); ok {
 		return true
 	}
 	return false
@@ -272,10 +280,14 @@ func (std *stdDriver) CheckNamedValue(nv *driver.NamedValue) error { return nil 
 var _ driver.NamedValueChecker = (*stdDriver)(nil)
 
 func (std *stdDriver) ExecContext(ctx context.Context, query string, args []driver.NamedValue) (driver.Result, error) {
+	var err error
 	if options := queryOptions(ctx); options.async.ok {
-		return driver.RowsAffected(0), std.conn.asyncInsert(ctx, query, options.async.wait, rebind(args)...)
+		err = std.conn.asyncInsert(ctx, query, options.async.wait, rebind(args)...)
+	} else {
+		err = std.conn.exec(ctx, query, rebind(args)...)
 	}
-	if err := std.conn.exec(ctx, query, rebind(args)...); err != nil {
+
+	if err != nil {
 		if isConnBrokenError(err) {
 			std.debugf("ExecContext got a fatal error, resetting connection: %v\n", err)
 			return nil, driver.ErrBadConn

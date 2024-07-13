@@ -9,7 +9,7 @@ github.com/Azure/go-ansiterm/winterm
 ## explicit; go 1.21
 github.com/ClickHouse/ch-go/compress
 github.com/ClickHouse/ch-go/proto
-# github.com/ClickHouse/clickhouse-go/v2 v2.25.0
+# github.com/ClickHouse/clickhouse-go/v2 v2.26.0
 ## explicit; go 1.21
 github.com/ClickHouse/clickhouse-go/v2
 github.com/ClickHouse/clickhouse-go/v2/contributors
@@ -72,7 +72,7 @@ github.com/go-faster/city
 # github.com/go-faster/errors v0.7.1
 ## explicit; go 1.20
 github.com/go-faster/errors
-# github.com/go-testfixtures/testfixtures/v3 v3.11.0
+# github.com/go-testfixtures/testfixtures/v3 v3.12.0
 ## explicit; go 1.21
 github.com/go-testfixtures/testfixtures/v3
 # github.com/gogo/protobuf v1.3.2
@@ -221,6 +221,7 @@ go.opentelemetry.io/otel/trace/embedded
 golang.org/x/crypto/pbkdf2
 # golang.org/x/sync v0.7.0
 ## explicit; go 1.18
+golang.org/x/sync/errgroup
 golang.org/x/sync/semaphore
 # golang.org/x/sys v0.21.0
 ## explicit; go 1.18

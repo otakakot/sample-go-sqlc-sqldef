@@ -1,6 +1,6 @@
 module github.com/otakakot/sample-go-sqlc-sqldef
 
-go 1.22.2
+go 1.23.1
 
 require (
 	github.com/go-testfixtures/testfixtures/v3 v3.12.0

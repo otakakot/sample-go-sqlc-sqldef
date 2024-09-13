@@ -23,10 +23,6 @@ balus: ## destroy everything about docker. (containers, images, volumes, network
 psql:
 	@docker exec -it postgres psql -U postgres
 
-.PHONY: mig
-mig: ## run migration
-	@psqldef --user=postgres --password=postgres --host=localhost --port=5432 postgres < schema/schema.sql 
-
 .PHONY: gen
 gen: ## generate sqlboiler
 	@find pkg/schema -type f -not -name "*.sql" -exec rm -rf {} \;
@@ -34,8 +30,8 @@ gen: ## generate sqlboiler
 	@go mod tidy
 	@go mod vendor
 
-.PHONY: update
-update: ## go modules update
+.PHONY: module
+module: ## go modules and update
 	@go get -u -t ./...
 	@go mod tidy
 	@go mod vendor

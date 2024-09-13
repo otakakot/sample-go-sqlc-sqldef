@@ -2,28 +2,6 @@
 
 Golang SQL database client for [ClickHouse](https://clickhouse.com/).
 
-## Versions
-
-There are two version of this client, v1 and v2, available as separate branches. 
-
-**v1 is now in a state of a maintenance - we will only accept PRs for bug and security fixes.**
-
-Users should use v2 which is production ready and [significantly faster than v1](#benchmark).
-
-v2 has breaking changes for users migrating from v1. These were not properly tracked prior to this client being officially supported. We endeavour to track known differences [here](https://github.com/ClickHouse/clickhouse-go/blob/main/v1_v2_CHANGES.md) and resolve where possible.
-
-## Supported ClickHouse Versions
-
-The client is tested against the currently [supported versions](https://github.com/ClickHouse/ClickHouse/blob/master/SECURITY.md) of ClickHouse
-
-## Supported Golang Versions
-
-| Client Version | Golang Versions |
-|----------------|-----------------|
-| => 2.0 <= 2.2  | 1.17, 1.18      |
-| >= 2.3         | 1.18.4+, 1.19   |
-| >= 2.14        | 1.20, 1.21      |
-
 ## Key features
 
 * Uses ClickHouse native format for optimal performance. Utilises low level [ch-go](https://github.com/ClickHouse/ch-go) client for encoding/decoding and compression (versions >= 2.3.0).
@@ -54,6 +32,22 @@ Support for the ClickHouse protocol advanced features using `Context`:
 	* Progress
 	* Profile info
 	* Profile events
+
+
+## Supported ClickHouse Versions
+
+The client is tested against the currently [supported versions](https://github.com/ClickHouse/ClickHouse/blob/master/SECURITY.md) of ClickHouse
+
+## Supported Golang Versions
+
+| Client Version | Golang Versions  |
+|----------------|------------------|
+| => 2.0 <= 2.2  | 1.17, 1.18       |
+| >= 2.3         | 1.18.4+, 1.19    |
+| >= 2.14        | 1.20, 1.21       |
+| >= 2.19        | 1.21, 1.22       |
+| >= 2.28        | 1.22, 1.23       |
+| >= 2.29        | 1.21, 1.22, 1.23 |
 
 ## Documentation
 
@@ -151,8 +145,9 @@ conn.SetConnMaxLifetime(time.Hour)
 * username/password - auth credentials
 * database - select the current default database
 * dial_timeout -  a duration string is a possibly signed sequence of decimal numbers, each with optional fraction and a unit suffix such as "300ms", "1s". Valid time units are "ms", "s", "m". (default 30s)
-* connection_open_strategy - round_robin/in_order (default in_order).
-    * round_robin      - choose a round-robin server from the set
+* connection_open_strategy - random/round_robin/in_order (default in_order).
+    * random      - choose random server from the set
+    * round_robin - choose a round-robin server from the set
     * in_order    - first live server is chosen in specified order
 * debug - enable debug output (boolean value)
 * compress - compress - specify the compression algorithm - “none” (default), `zstd`, `lz4`, `gzip`, `deflate`, `br`. If set to `true`, `lz4` will be used.
@@ -319,7 +314,7 @@ go get -u github.com/ClickHouse/clickhouse-go/v2
 * [batch struct](examples/clickhouse_api/append_struct.go)
 * [columnar](examples/clickhouse_api/columnar_insert.go)
 * [scan struct](examples/clickhouse_api/scan_struct.go)
-* [query parameters](examples/clickhouse_api/query_parameters.go) (deprecated in favour of native query parameters)
+* [query parameters](examples/clickhouse_api/query_parameters.go)
 * [bind params](examples/clickhouse_api/bind.go) (deprecated in favour of native query parameters)
 * [client info](examples/clickhouse_api/client_info.go)
 

@@ -28,13 +28,11 @@ gen: ## generate sqlboiler
 	@find pkg/schema -type f -not -name "*.sql" -exec rm -rf {} \;
 	@sqlc generate
 	@go mod tidy
-	@go mod vendor
 
 .PHONY: module
 module: ## go modules and update
 	@go get -u -t ./...
 	@go mod tidy
-	@go mod vendor
 
 .PHONY: test
 test: ## run test

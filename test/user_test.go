@@ -1,7 +1,6 @@
 package test_test
 
 import (
-	"context"
 	"errors"
 	"testing"
 
@@ -10,40 +9,33 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 
 	"github.com/otakakot/sample-go-sqlc-sqldef/pkg/schema"
-	"github.com/otakakot/sample-go-sqlc-sqldef/test/testx"
+	"github.com/otakakot/sample-go-sqlc-sqldef/test/internal/testx"
 )
 
 func TestCreateUser(t *testing.T) {
 	t.Parallel()
 
-	dsn, cleanup, err := testx.SetupContainer(t)
-	if err != nil {
-		t.Fatalf("failed to setup db: %v", err)
-	}
-
-	t.Cleanup(cleanup)
+	dsn := testx.SetupPostgres(t)
 
 	conn, err := pgxpool.ParseConfig(dsn)
 	if err != nil {
 		t.Fatalf("failed to parse config: %v", err)
 	}
 
-	pool, err := pgxpool.NewWithConfig(context.Background(), conn)
+	pool, err := pgxpool.NewWithConfig(t.Context(), conn)
 	if err != nil {
 		t.Fatalf("failed to create pool: %v", err)
 	}
 
 	t.Cleanup(pool.Close)
 
-	if err := pool.Ping(context.Background()); err != nil {
+	if err := pool.Ping(t.Context()); err != nil {
 		t.Fatalf("failed to ping db: %v", err)
 	}
 
-	ctx := context.Background()
-
 	name := uuid.NewString()
 
-	user, err := schema.New(pool).CreateUser(ctx, name)
+	user, err := schema.New(pool).CreateUser(t.Context(), name)
 	if err != nil {
 		t.Fatalf("failed to create user: %v", err)
 	}
@@ -56,32 +48,25 @@ func TestCreateUser(t *testing.T) {
 func TestFindUserByID(t *testing.T) {
 	t.Parallel()
 
-	dsn, cleanup, err := testx.SetupContainer(t)
-	if err != nil {
-		t.Fatalf("failed to setup db: %v", err)
-	}
-
-	t.Cleanup(cleanup)
+	dsn := testx.SetupPostgres(t)
 
 	conn, err := pgxpool.ParseConfig(dsn)
 	if err != nil {
 		t.Fatalf("failed to parse config: %v", err)
 	}
 
-	pool, err := pgxpool.NewWithConfig(context.Background(), conn)
+	pool, err := pgxpool.NewWithConfig(t.Context(), conn)
 	if err != nil {
 		t.Fatalf("failed to create pool: %v", err)
 	}
 
 	t.Cleanup(pool.Close)
 
-	if err := testx.SetupData(t, dsn); err != nil {
-		t.Fatalf("failed to setup data: %v", err)
-	}
+	testx.SetupData(t, dsn)
 
 	id := uuid.MustParse("77777777-7777-7777-7777-777777777777")
 
-	user, err := schema.New(pool).FindUserByID(context.Background(), id)
+	user, err := schema.New(pool).FindUserByID(t.Context(), id)
 	if err != nil {
 		t.Fatalf("failed to find user: %v", err)
 	}
@@ -90,7 +75,7 @@ func TestFindUserByID(t *testing.T) {
 		t.Errorf("user id is not correct: %s", user.ID)
 	}
 
-	if _, err := schema.New(pool).FindUserByID(context.Background(), uuid.New()); err == nil {
+	if _, err := schema.New(pool).FindUserByID(t.Context(), uuid.New()); err == nil {
 		t.Errorf("user should not be found")
 	} else {
 		if !errors.Is(pgx.ErrNoRows, err) {
@@ -102,39 +87,32 @@ func TestFindUserByID(t *testing.T) {
 func TestUpdateUser(t *testing.T) {
 	t.Parallel()
 
-	dsn, cleanup, err := testx.SetupContainer(t)
-	if err != nil {
-		t.Fatalf("failed to setup db: %v", err)
-	}
-
-	t.Cleanup(cleanup)
+	dsn := testx.SetupPostgres(t)
 
 	conn, err := pgxpool.ParseConfig(dsn)
 	if err != nil {
 		t.Fatalf("failed to parse config: %v", err)
 	}
 
-	pool, err := pgxpool.NewWithConfig(context.Background(), conn)
+	pool, err := pgxpool.NewWithConfig(t.Context(), conn)
 	if err != nil {
 		t.Fatalf("failed to create pool: %v", err)
 	}
 
 	t.Cleanup(pool.Close)
 
-	if err := testx.SetupData(t, dsn); err != nil {
-		t.Fatalf("failed to setup data: %v", err)
-	}
+	testx.SetupData(t, dsn)
 
 	id := uuid.MustParse("77777777-7777-7777-7777-777777777777")
 
-	want, err := schema.New(pool).FindUserByID(context.Background(), id)
+	want, err := schema.New(pool).FindUserByID(t.Context(), id)
 	if err != nil {
 		t.Fatalf("failed to find user: %v", err)
 	}
 
 	name := uuid.NewString()
 
-	got, err := schema.New(pool).UpdateUser(context.Background(), schema.UpdateUserParams{
+	got, err := schema.New(pool).UpdateUser(t.Context(), schema.UpdateUserParams{
 		ID:   id,
 		Name: name,
 	})
@@ -162,36 +140,29 @@ func TestUpdateUser(t *testing.T) {
 func TestDeleteUser(t *testing.T) {
 	t.Parallel()
 
-	dsn, cleanup, err := testx.SetupContainer(t)
-	if err != nil {
-		t.Fatalf("failed to setup db: %v", err)
-	}
-
-	t.Cleanup(cleanup)
+	dsn := testx.SetupPostgres(t)
 
 	conn, err := pgxpool.ParseConfig(dsn)
 	if err != nil {
 		t.Fatalf("failed to parse config: %v", err)
 	}
 
-	pool, err := pgxpool.NewWithConfig(context.Background(), conn)
+	pool, err := pgxpool.NewWithConfig(t.Context(), conn)
 	if err != nil {
 		t.Fatalf("failed to create pool: %v", err)
 	}
 
 	t.Cleanup(pool.Close)
 
-	if err := testx.SetupData(t, dsn); err != nil {
-		t.Fatalf("failed to setup data: %v", err)
-	}
+	testx.SetupData(t, dsn)
 
 	id := uuid.MustParse("77777777-7777-7777-7777-777777777777")
 
-	if err := schema.New(pool).DeleteUser(context.Background(), id); err != nil {
+	if err := schema.New(pool).DeleteUser(t.Context(), id); err != nil {
 		t.Fatalf("failed to delete user: %v", err)
 	}
 
-	if _, err := schema.New(pool).FindUserByID(context.Background(), id); err == nil {
+	if _, err := schema.New(pool).FindUserByID(t.Context(), id); err == nil {
 		t.Errorf("user should not be found")
 	} else {
 		if !errors.Is(pgx.ErrNoRows, err) {
